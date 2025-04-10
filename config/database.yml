@@ -33,7 +33,7 @@ development: &development
     host: <%= ENV.fetch('QUEUE_DB_HOST', 'localhost') %>
     username: <%= ENV.fetch('QUEUE_DB_USER', 'postgres') %>
     password: <%= ENV.fetch('QUEUE_DB_PASSWORD', 'password') %>
-    port: <%= ENV.fetch('QUEUE_DB_PORT', 5433) %>
+    port: <%= ENV.fetch('QUEUE_DB_PORT', 5432) %>
     migrations_paths: db/queue_migrate
 
   # The specified database role being used to connect to PostgreSQL.

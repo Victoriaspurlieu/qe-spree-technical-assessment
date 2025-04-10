@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  use_doorkeeper
   # This line mounts Spree's routes at the root of your application.
   # This means, any requests to URLs such as /products, will go to
   # Spree::ProductsController.
@@ -8,6 +9,8 @@ Rails.application.routes.draw do
   # We ask that you don't use the :as option here, as Spree relies on it being
   # the default of "spree".
   mount Spree::Core::Engine, at: '/'
+  mount Spree::Admin::Engine, at: '/admin'
+  use_doorkeeper scope: 'spree_oauth'
   devise_for :users, class_name: "Spree::User"
 
   # https://github.com/basecamp/mission_control-jobs?tab=readme-ov-file#basic-configuration

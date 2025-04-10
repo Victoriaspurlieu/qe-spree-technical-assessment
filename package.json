@@ -1,0 +1,30 @@
+{
+  "name": "qe-spree-technical-assessment",
+  "version": "1.0.0",
+  "description": "This is a technical assessment for Quality Engineering using Spree Commerce platform.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Victoriaspurlieu/qe-spree-technical-assessment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Victoriaspurlieu/qe-spree-technical-assessment/issues"
+  },
+  "homepage": "https://github.com/Victoriaspurlieu/qe-spree-technical-assessment#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.14.0",
+    "playwright": "^1.51.1"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  }
+}

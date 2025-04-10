@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby '3.3.0'
+ruby '3.2.3'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.2.1.2'
@@ -91,3 +91,4 @@ gem "spree_sample", spree_opts
 gem "spree_admin", spree_opts
 gem "spree_storefront", spree_opts
 gem "spree_i18n"
+gem "doorkeeper", "~> 5.6"
