@@ -89,6 +89,7 @@ const spreeEndpoints = SpreeEndpoints.getInstance(testData.api.baseUrl);
 
 export class ApiUtils extends BaseApiClient {
     private cartToken: string | undefined;
+    private authToken: string | undefined;
 
     constructor(request: APIRequestContext, baseUrl: string) {
         super(baseUrl, request);
@@ -97,6 +98,11 @@ export class ApiUtils extends BaseApiClient {
     setCartToken(cartToken: string) {
         this.cartToken = cartToken;
         this.headers['X-Spree-Order-Token'] = cartToken;
+    }
+
+    setAuthToken(token: string) {
+        this.authToken = token;
+        this.headers['Authorization'] = `Bearer ${token}`;
     }
 
     async handleResponse<T>(response: APIResponse): Promise<T> {
@@ -116,10 +122,10 @@ export class ApiUtils extends BaseApiClient {
         });
     }
 
-    async updateCartQuantity(variantId: string, quantity: number): Promise<APIResponse> {
+    async updateCartQuantity(lineItemId: string, quantity: number): Promise<APIResponse> {
         return await super.putRaw(this.endpoints.cart.setQuantity, {
             line_item: {
-                variant_id: variantId,
+                id: lineItemId,
                 quantity: quantity
             }
         });
@@ -183,10 +189,41 @@ export class ApiUtils extends BaseApiClient {
     }
 
     async adminLogin(email: string, password: string): Promise<APIResponse> {
-        return await this.postRaw(this.endpoints.admin.login.replace(this.baseUrl, ''), {
-            email,
-            password
+        console.log('Starting admin login process...');
+        console.log('Using credentials:', { email, password });
+        console.log('Using client credentials:', { 
+            client_id: testData.api.admin.clientId, 
+            client_secret: testData.api.admin.clientSecret 
         });
+
+        const formData = new URLSearchParams();
+        formData.append('grant_type', 'password');
+        formData.append('username', email);
+        formData.append('password', password);
+        formData.append('client_id', testData.api.admin.clientId);
+        formData.append('client_secret', testData.api.admin.clientSecret);
+
+        const response = await this.postRaw(this.endpoints.oauth.token, formData.toString(), {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        });
+
+        console.log('Admin login response status:', response.status());
+        console.log('Admin login response headers:', response.headers());
+        const rawBody = await response.text();
+        console.log('Admin login response body:', rawBody);
+        
+        try {
+            const parsedBody = JSON.parse(rawBody);
+            console.log('Parsed response JSON:', parsedBody);
+            if (response.ok() && parsedBody.access_token) {
+                this.setAuthToken(parsedBody.access_token);
+            }
+        } catch (e) {
+            console.error('Failed to parse response:', e);
+        }
+
+        console.log('Full response:', rawBody);
+        return response;
     }
 
     async getCurrentUser(): Promise<APIResponse> {
@@ -194,7 +231,9 @@ export class ApiUtils extends BaseApiClient {
     }
 
     async getAdminOrders(token: string): Promise<APIResponse> {
-        return await this.getRaw(this.endpoints.admin.orders);
+        return await this.getRaw(this.endpoints.admin.orders, {
+            'Authorization': `Bearer ${token}`
+        });
     }
 
     async adminLogout(): Promise<APIResponse> {

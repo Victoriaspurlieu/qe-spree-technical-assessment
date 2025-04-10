@@ -69,17 +69,19 @@ export class SpreeEndpoints {
 
     get oauth() {
         return {
-            token: `${this.baseUrl}/spree_oauth/token`,
-            revoke: `${this.baseUrl}/spree_oauth/revoke`
+            token: '/spree_oauth/token',
+            revoke: '/spree_oauth/revoke'
         };
     }
 
     get admin() {
         return {
-            login: `${this.baseUrl}/api/v2/platform/users/sign_in`,
-            logout: `${this.baseUrl}/api/v2/platform/users/sign_out`,
-            currentUser: `${this.baseUrl}/api/v2/platform/users/current`,
-            orders: `${this.baseUrl}/api/v2/platform/orders`
+            currentUser: '/api/v2/platform/users/me',
+            orders: '/api/v2/platform/orders',
+            products: '/api/v2/platform/products',
+            variants: '/api/v2/platform/variants',
+            stockItems: '/api/v2/platform/stock_items',
+            users: '/api/v2/platform/users'
         };
     }
 } 

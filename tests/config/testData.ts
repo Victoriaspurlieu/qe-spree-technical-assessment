@@ -174,10 +174,10 @@ const testData: TestDataType = {
         baseUrl: 'http://localhost:3000',
         productId: '1',
         admin: {
-            email: 'admin@example.com',
-            password: 'admin123',
-            clientId: 'client_id',
-            clientSecret: 'client_secret'
+            email: 'spree@example.com',
+            password: 'spree123',
+            clientId: 'spree_api_key',
+            clientSecret: 'spree_api_secret'
         },
         testAddress: {
             firstname: 'John',

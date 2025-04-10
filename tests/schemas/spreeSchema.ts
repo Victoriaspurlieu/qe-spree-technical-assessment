@@ -5,14 +5,19 @@ export enum StatusCode {
     BadRequest = 400,
     Unauthorized = 401,
     NotFound = 404,
-    UnprocessableEntity = 422
+    UnprocessableEntity = 422,
+    InternalServerError = 500
 }
 
 export enum ErrorMessage {
     InvalidCredentials = 'Invalid email or password.',
     Unauthorized = 'You need to sign in or sign up before continuing.',
     ProductNotFound = 'Product not found',
-    InvalidQuantity = 'Invalid quantity'
+    InvalidQuantity = 'Invalid quantity',
+    InvalidClient = 'Invalid client credentials',
+    InvalidGrant = 'Invalid grant type',
+    UnsupportedGrantType = 'Unsupported grant type',
+    InvalidScope = 'Invalid scope'
 }
 
 export interface CartResponse {
@@ -88,7 +93,7 @@ export interface UserResponse {
 }
 
 export interface TokenResponse {
-    status: number;
+    status?: number;
     access_token: string;
     token_type: string;
     expires_in: number;
@@ -109,4 +114,15 @@ export interface OrderResponse {
             updatedAt: string;
         };
     }[];
+}
+
+export interface OAuthErrorResponse {
+    error: string;
+    error_description?: string;
+}
+
+export interface AdminErrorResponse {
+    error: string;
+    error_description?: string;
+    status: number;
 } 
