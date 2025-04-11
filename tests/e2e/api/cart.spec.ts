@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { ApiUtils } from '../../utils/apiUtils';
 import testData from '../../config/testData';
 import { StatusCode } from '../../schemas/spreeSchema';
-import { SpreeEndpoints } from '../../endpoints/spreeEndpoints';
+import { SpreeEndpoints } from '../../config/endpoints/spreeEndpoints';
 import { authenticateAdmin } from '../../utils/authUtils';
 
 const spreeEndpoints = SpreeEndpoints.getInstance(testData.api.baseUrl);

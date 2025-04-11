@@ -1,0 +1,86 @@
+{
+  "data": {
+    "id": "7",
+    "type": "cart",
+    "attributes": {
+      "number": "R876714487",
+      "item_total": "66.99",
+      "total": "66.99",
+      "ship_total": "0.0",
+      "adjustment_total": "0.0",
+      "created_at": "2025-04-11T03:16:00.250Z",
+      "updated_at": "2025-04-11T03:16:00.450Z",
+      "completed_at": null,
+      "included_tax_total": "0.0",
+      "additional_tax_total": "0.0",
+      "display_additional_tax_total": "$0.00",
+      "display_included_tax_total": "$0.00",
+      "tax_total": "0.0",
+      "currency": "USD",
+      "state": "cart",
+      "token": "nhi6NmnBcrSkLGtdweuQmA1744341360238",
+      "email": null,
+      "display_item_total": "$66.99",
+      "display_ship_total": "$0.00",
+      "display_adjustment_total": "$0.00",
+      "display_tax_total": "$0.00",
+      "promo_total": "0.0",
+      "display_promo_total": "$0.00",
+      "item_count": 1,
+      "special_instructions": null,
+      "display_total": "$66.99",
+      "pre_tax_item_amount": "66.99",
+      "display_pre_tax_item_amount": "$66.99",
+      "pre_tax_total": "66.99",
+      "display_pre_tax_total": "$66.99",
+      "shipment_state": null,
+      "payment_state": null,
+      "public_metadata": {},
+      "total_minus_store_credits": "66.99",
+      "display_total_minus_store_credits": "$66.99",
+      "subtotal_cents": 6699,
+      "ship_total_cents": 0,
+      "store_credit_total_cents": 0,
+      "promo_total_cents": 0,
+      "tax_total_cents": 0,
+      "total_cents": 6699,
+      "total_minus_store_credits_cents": 6699
+    },
+    "relationships": {
+      "line_items": {
+        "data": [
+          {
+            "id": "5",
+            "type": "line_item"
+          }
+        ]
+      },
+      "variants": {
+        "data": [
+          {
+            "id": "117",
+            "type": "variant"
+          }
+        ]
+      },
+      "promotions": {
+        "data": []
+      },
+      "payments": {
+        "data": []
+      },
+      "shipments": {
+        "data": []
+      },
+      "user": {
+        "data": null
+      },
+      "billing_address": {
+        "data": null
+      },
+      "shipping_address": {
+        "data": null
+      }
+    }
+  }
+}

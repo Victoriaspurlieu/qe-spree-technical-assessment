@@ -10,6 +10,12 @@ interface TestDataType {
         initialPage: string;
         newSessionCart: string;
         cartCheck: string;
+        beforeLogin: string;
+        afterLogin: string;
+        adminLoginSuccess: string;
+        adminLoginError: string;
+        adminLoginInvalid: string;
+        adminLoginInvalidError: string;
     };
     paths: {
         home: string;
@@ -19,6 +25,11 @@ interface TestDataType {
         checkout: string;
         cartState: string;
         adminLogin: string;
+        login: string;
+        printedPants: string;
+        baseUrl: string;
+        storageState: string;
+        signIn: string;
     };
     selectors: {
         addToCartButton: string;
@@ -44,6 +55,9 @@ interface TestDataType {
         adminEmailInput: string;
         adminPasswordInput: string;
         adminSubmitButton: string;
+        userEmail: string;
+        userPassword: string;
+        submitButton: string;
     };
     api: {
         baseUrl: string;
@@ -104,6 +118,29 @@ interface TestDataType {
                 orders: string;
                 users: string;
             };
+            auth: {
+                login: string;
+                credentials: {
+                    email: string;
+                    password: string;
+                };
+                invalidCredentials: {
+                    email: string;
+                    password: string;
+                };
+            };
+        };
+        cookies: {
+            adminSession: string;
+        };
+        statusCodes: {
+            ok: number;
+            unprocessableEntity: number;
+            found: number;
+            seeOther: number;
+        };
+        errorMessages: {
+            invalidCredentials: string;
         };
     };
     ui: {
@@ -112,6 +149,10 @@ interface TestDataType {
             password: string;
         };
         admin: {
+            email: string;
+            password: string;
+        };
+        invalidCredentials: {
             email: string;
             password: string;
         };
@@ -124,6 +165,20 @@ interface TestDataType {
         continueShopping: string;
         checkout: string;
         welcomeText: string;
+        loginSuccess: string;
+        loginError: string;
+    };
+    timeouts: {
+        test: number;
+        selector: number;
+    };
+    errorMessages: {
+        loginFailed: string;
+        invalidLoginFailed: string;
+    };
+    states: {
+        visible: 'visible' | 'hidden' | 'attached' | 'detached';
+        networkIdle: 'load' | 'domcontentloaded' | 'networkidle';
     };
 }
 
@@ -138,7 +193,13 @@ const testData: TestDataType = {
         afterDropdownClick: 'test-results/screenshots/after-dropdown-click.png',
         initialPage: 'test-results/screenshots/initial-page.png',
         newSessionCart: 'test-results/screenshots/new-session-cart.png',
-        cartCheck: 'test-results/screenshots/cart-check.png'
+        cartCheck: 'test-results/screenshots/cart-check.png',
+        beforeLogin: 'test-results/before-login.png',
+        afterLogin: 'test-results/after-login.png',
+        adminLoginSuccess: 'test-results/admin-login-success.png',
+        adminLoginError: 'test-results/admin-login-error.png',
+        adminLoginInvalid: 'test-results/admin-login-invalid.png',
+        adminLoginInvalidError: 'test-results/admin-login-invalid-error.png'
     },
     paths: {
         home: '/',
@@ -146,8 +207,13 @@ const testData: TestDataType = {
         product: '/products/printed-pants',
         cart: '/cart',
         checkout: '/checkout',
-        cartState: 'test-results/cart-state.json',
-        adminLogin: '/admin/login'
+        cartState: '/cart',
+        adminLogin: '/users/sign_in',
+        login: '/login',
+        printedPants: '/products/printed-pants',
+        baseUrl: 'http://localhost:3000',
+        storageState: 'test-results/cart-state.json',
+        signIn: '/users/sign_in'
     },
     selectors: {
         addToCartButton: 'button.add-to-cart-button:not([disabled])',
@@ -172,7 +238,10 @@ const testData: TestDataType = {
         flashMessage: '.flash-message',
         adminEmailInput: '#admin_email',
         adminPasswordInput: '#admin_password',
-        adminSubmitButton: 'button[type="submit"]'
+        adminSubmitButton: 'button[type="submit"]',
+        userEmail: '#user_email',
+        userPassword: '#user_password',
+        submitButton: 'input[type="submit"][name="commit"]'
     },
     api: {
         baseUrl: 'http://localhost:3000',
@@ -232,7 +301,30 @@ const testData: TestDataType = {
             admin: {
                 orders: '/api/v2/admin/orders',
                 users: '/api/v2/admin/users'
+            },
+            auth: {
+                login: '/users/sign_in',
+                credentials: {
+                    email: 'spree@example.com',
+                    password: 'spree123'
+                },
+                invalidCredentials: {
+                    email: 'invalid@example.com',
+                    password: 'wrongpassword'
+                }
             }
+        },
+        cookies: {
+            adminSession: 'spree_admin_session'
+        },
+        statusCodes: {
+            ok: 200,
+            unprocessableEntity: 422,
+            found: 302,
+            seeOther: 303
+        },
+        errorMessages: {
+            invalidCredentials: 'Invalid Email or password.'
         }
     },
     ui: {
@@ -243,6 +335,10 @@ const testData: TestDataType = {
         admin: {
             email: 'admin@example.com',
             password: 'admin123'
+        },
+        invalidCredentials: {
+            email: 'invalid@example.com',
+            password: 'wrongpassword'
         }
     },
     texts: {
@@ -252,7 +348,21 @@ const testData: TestDataType = {
         removeItem: 'Remove',
         continueShopping: 'Continue Shopping',
         checkout: 'Checkout',
-        welcomeText: 'Welcome to our shop'
+        welcomeText: 'Welcome to our shop',
+        loginSuccess: 'Signed in successfully.',
+        loginError: 'Invalid Email or password.'
+    },
+    timeouts: {
+        test: 60000,
+        selector: 10000
+    },
+    errorMessages: {
+        loginFailed: 'Login failed:',
+        invalidLoginFailed: 'Invalid login test failed:'
+    },
+    states: {
+        visible: 'visible',
+        networkIdle: 'networkidle'
     }
 };
 

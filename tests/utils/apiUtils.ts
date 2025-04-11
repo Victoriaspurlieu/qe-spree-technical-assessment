@@ -1,9 +1,9 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
-import { SpreeEndpoints } from '../endpoints/spreeEndpoints';
+import { SpreeEndpoints } from '../config/endpoints/spreeEndpoints';
 import { z } from 'zod';
 import testData from '../config/testData';
 import { StatusCode, ErrorMessage, UserResponse, TokenResponse, OrderResponse, OAuthErrorResponse, AdminErrorResponse } from '../schemas/spreeSchema';
-import { BaseApiClient } from '../framework/api/baseApiClient';
+import { BaseApiClient } from './api/baseApiClient';
 
 type SpreeResponse = UserResponse;
 

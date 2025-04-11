@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { addProductToCart } from '../../helpers/cartActions';
+import { addProductToCart } from '../../utils/cartActions';
 
 test.describe('Add to Cart', () => {
     test('should add product to cart', async ({ page }) => {

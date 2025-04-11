@@ -60,4 +60,13 @@ export class ProductPage extends BasePage {
             return false;
         }
     }
+
+    async getProductPrice(): Promise<string | null> {
+        try {
+            await this.page.waitForSelector(testData.selectors.productPrice, { timeout: 5000 });
+            return await this.page.textContent(testData.selectors.productPrice);
+        } catch (error) {
+            return null;
+        }
+    }
 } 

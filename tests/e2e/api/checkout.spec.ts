@@ -67,129 +67,112 @@ test.describe('Checkout flow', () => {
         const cartWithAddressData = await cartWithAddress.json();
         console.log('Cart State:', JSON.stringify(cartWithAddressData, null, 2));
 
-        // Select shipping method
-        // const shippingResponse = await apiUtils.selectFirstShippingRate();
-        // expect(shippingResponse.status()).toBe(StatusCode.Ok);
+       // Select shipping method
+       const shippingResponse = await apiUtils.selectFirstShippingRate();
+       expect(shippingResponse.status()).toBe(StatusCode.Ok);
+       const shippingData = await shippingResponse.json();
+       fs.writeFileSync(path.join(artifactsDir, 'shipping_data.json'), JSON.stringify(shippingData, null, 2));
 
-        // // Add payment method
-        // const paymentResponse = await apiUtils.addPaymentToOrder();
-        // expect(paymentResponse.status()).toBe(StatusCode.Ok);
+       // Add payment method
+       const paymentResponse = await apiUtils.addPaymentToOrder();
+       expect(paymentResponse.status()).toBe(StatusCode.Ok);
+       const paymentData = await paymentResponse.json();
+       fs.writeFileSync(path.join(artifactsDir, 'payment_data.json'), JSON.stringify(paymentData, null, 2));
 
-        // Complete the order
-        // const completeResponse = await apiUtils.completeOrder();
-        // expect(completeResponse.status()).toBe(StatusCode.Ok);
+       // Complete the order
+       const completeResponse = await apiUtils.completeOrder();
+       expect(completeResponse.status()).toBe(StatusCode.Ok);
+       const orderData = await completeResponse.json();
+       fs.writeFileSync(path.join(artifactsDir, 'final_order.json'), JSON.stringify(orderData, null, 2));
 
-        // Verify order completion
-        // const orderData = await completeResponse.json();
-        // expect(orderData.data.attributes.state).toBe('complete');
-        // expect(orderData.data.attributes.payment_state).toBe('paid');
-        // expect(orderData.data.attributes.shipment_state).toBe('ready');
+       // Verify order completion
+       expect(orderData.data.attributes.state).toBe('complete');
+       expect(orderData.data.attributes.payment_state).toBe('paid');
+       expect(orderData.data.attributes.shipment_state).toBe('ready');
     });
 
-    // test('should handle payment decline', async ({ request }) => {
-    //     const apiUtils = await authenticateUser(request);
+    test('should handle payment decline', async ({ request }) => {
+        const apiUtils = await authenticateAdmin(request);
+        await apiUtils.addToCart(testData.api.productId);
+        await apiUtils.proceedToCheckout();
+        await apiUtils.addShippingAddress({
+            firstname: 'John',
+            lastname: 'Doe',
+            address1: '123 Main St',
+            city: 'New York',
+            zipcode: '10001',
+            phone: '555-123-4567',
+            state_name: 'NY',
+            country_iso: 'US'
+        });
+        await apiUtils.selectFirstShippingRate();
+        try {
+            await apiUtils.addPaymentToOrder();
+            throw new Error('Expected payment to be declined');
+        } catch (error: any) {
+            expect(error.message).toContain('Payment was declined');
+        }
 
-    //     // Add product to cart
-    //     await apiUtils.addToCart(testData.api.productId);
+        const orderResponse = await apiUtils.getCurrentOrder();
+        const orderData = await orderResponse.json();
+        expect(orderData.data.attributes.payment_state).toBe('failed');
+    });
 
-    //     // Proceed to checkout
-    //     await apiUtils.proceedToCheckout();
+    test('should handle invalid shipping address', async ({ request }) => {
+        const apiUtils = await authenticateAdmin(request);
+        await apiUtils.addToCart(testData.api.productId);
+        await apiUtils.proceedToCheckout();
 
-    //     // Add shipping address
-    //     await apiUtils.addShippingAddress({
-    //         firstname: 'John',
-    //         lastname: 'Doe',
-    //         address1: '123 Main St',
-    //         city: 'New York',
-    //         zipcode: '10001',
-    //         phone: '555-123-4567',
-    //         state_name: 'NY',
-    //         country_iso: 'US'
-    //     });
+        try {
+            await apiUtils.addShippingAddress({
+                firstname: '',
+                lastname: '',
+                address1: '',
+                city: '',
+                zipcode: '',
+                phone: '',
+                state_name: '',
+                country_iso: ''
+            });
+            throw new Error('Expected address validation to fail');
+        } catch (error: any) {
+            expect(error.message).toContain('Address validation failed');
+        }
+    });
 
-    //     // Select shipping method
-    //     await apiUtils.selectFirstShippingRate();
+    test('should handle out of stock items', async ({ request }) => {
+        const apiUtils = await authenticateAdmin(request);
 
-    //     // Add declined payment method
-    //     try {
-    //         await apiUtils.addPaymentToOrder('declined');
-    //         throw new Error('Expected payment to be declined');
-    //     } catch (error: any) {
-    //         expect(error.message).toContain('Payment was declined');
-    //     }
+        try {
+            await apiUtils.addToCart(testData.api.outOfStockProductId);
+            throw new Error('Expected out of stock error');
+        } catch (error: any) {
+            expect(error.message).toContain('Out of stock');
+        }
+    });
 
-    //     // Verify order state
-    //     const orderResponse = await apiUtils.getCurrentOrder();
-    //     const orderData = await orderResponse.json();
-    //     expect(orderData.data.attributes.payment_state).toBe('failed');
-    // });
+    test('should handle session expiration during checkout', async ({ request }) => {
+        const apiUtils = await authenticateAdmin(request);
+        await apiUtils.addToCart(testData.api.productId);
+        await apiUtils.proceedToCheckout();
 
-    // test('should handle invalid shipping address', async ({ request }) => {
-    //     const apiUtils = await authenticateUser(request);
+        await apiUtils.clearAuthToken();
 
-    //     // Add product to cart
-    //     await apiUtils.addToCart(testData.api.productId);
-
-    //     // Proceed to checkout
-    //     await apiUtils.proceedToCheckout();
-
-    //     // Try to add invalid shipping address
-    //     try {
-    //         await apiUtils.addShippingAddress({
-    //             firstname: '',
-    //             lastname: '',
-    //             address1: '',
-    //             city: '',
-    //             zipcode: '',
-    //             phone: '',
-    //             state_name: '',
-    //             country_iso: ''
-    //         });
-    //         throw new Error('Expected address validation to fail');
-    //     } catch (error: any) {
-    //         expect(error.message).toContain('Address validation failed');
-    //     }
-    // });
-
-    // test('should handle out of stock items', async ({ request }) => {
-    //     const apiUtils = await authenticateUser(request);
-
-    //     // Add out of stock product to cart
-    //     try {
-    //         await apiUtils.addToCart(testData.api.outOfStockProductId);
-    //         throw new Error('Expected out of stock error');
-    //     } catch (error: any) {
-    //         expect(error.message).toContain('Out of stock');
-    //     }
-    // });
-
-    // test('should handle session expiration during checkout', async ({ request }) => {
-    //     const apiUtils = await authenticateUser(request);
-
-    //     // Add product to cart
-    //     await apiUtils.addToCart(testData.api.productId);
-
-    //     // Proceed to checkout
-    //     await apiUtils.proceedToCheckout();
-
-    //     // Simulate session expiration
-    //     await apiUtils.clearAuthToken();
-
-    //     // Try to continue checkout
-    //     try {
-    //         await apiUtils.addShippingAddress({
-    //             firstname: 'John',
-    //             lastname: 'Doe',
-    //             address1: '123 Main St',
-    //             city: 'New York',
-    //             zipcode: '10001',
-    //             phone: '555-123-4567',
-    //             state_name: 'NY',
-    //             country_iso: 'US'
-    //         });
-    //         throw new Error('Expected authentication error');
-    //     } catch (error: any) {
-    //         expect(error.message).toContain('Unauthorized');
-    //     }
-    // });
+        try {
+            await apiUtils.addShippingAddress({
+                firstname: 'John',
+                lastname: 'Doe',
+                address1: '123 Main St',
+                city: 'New York',
+                zipcode: '10001',
+                phone: '555-123-4567',
+                state_name: 'NY',
+                country_iso: 'US'
+            });
+            throw new Error('Expected authentication error');
+        } catch (error: any) {
+            expect(error.message).toContain('Unauthorized');
+        }
+    });
 });
+

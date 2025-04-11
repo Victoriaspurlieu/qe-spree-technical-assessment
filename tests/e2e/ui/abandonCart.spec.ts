@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { CartPage } from '../../pages/CartPage';
+import { CartPage } from '../../pages/cartPage';
 import { ProductPage } from '../../pages/productPage';
 import testData from '../../config/testData';
-import { addProductToCart } from '../../helpers/cartActions';
+import { addProductToCart } from '../../utils/cartActions';
 
 test.describe('Add to Cart', () => {
 
@@ -28,11 +28,11 @@ test.describe('Abandon Cart', () => {
     await cartPage.waitForCartLoad();
     expect(await cartPage.isProductPresent()).toBeTruthy();
 
-    await context.storageState({ path: 'test-results/cart-state.json' });
+    await context.storageState({ path: testData.paths.storageState });
     await context.close();
 
     // New context with restored state
-    const newContext = await browser.newContext({ storageState: 'test-results/cart-state.json' });
+    const newContext = await browser.newContext({ storageState: testData.paths.storageState });
     const newPage = await newContext.newPage();
     const newCartPage = new CartPage(newPage);
 
