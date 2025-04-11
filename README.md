@@ -1,12 +1,131 @@
 # Spree eCommerce Quality Engineering Assessment
+This is a technical assessment for Quality Engineering using Spree Commerce platform.
 
-As a Senior Software Test Engineer, I approached this assignment not just as a checklist of tasks, but as a real-world scenario where my goal was to build a maintainable, scalable, and effective test framework for a production-grade eCommerce application.
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Ruby 3.2.3
+- Node.js (LTS version recommended)
+- PostgreSQL
+- Git
+
+## Environment Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Victoriaspurlieu/qe-spree-technical-assessment.git
+cd qe-spree-technical-assessment
+```
+
+2. Install Ruby dependencies:
+```bash
+gem install bundler
+bundle install
+```
+
+3. Install Node.js dependencies:
+```bash
+npm install
+```
+
+4. Set up the database:
+```bash
+bundle exec rails db:create
+bundle exec rails db:migrate
+bundle exec rails db:seed
+```
+
+5. Install Playwright browsers:
+```bash
+npx playwright install
+```
+
+## Running the Application
+
+1. Start the Rails server:
+```bash
+bundle exec rails server
+```
+
+2. The application will be available at `http://localhost:3000`
+
+### Setup
+```bash
+npm install
+npx playwright install
+```
+
+### Open Last HTML Report
+```bash
+npx playwright show-report
+
+### Running Tests
+
+The project uses Playwright for both UI and API testing. Here are the available test commands:
+
+- Run all tests:
+```bash
+npm test
+```
+
+- Run UI tests only:
+```bash
+npm run test:ui
+```
+
+- Run API tests only:
+```bash
+npm run test:api
+```
+
+- Run tests in debug mode:
+```bash
+npm run test:debug
+```
+
+## Project Dependencies
+
+### Ruby Dependencies
+- Rails 7.2.1.2
+- PostgreSQL
+- Spree Commerce
+- Devise for authentication
+- Solid Queue for background jobs
+- Solid Cache for caching
+- And other essential Rails gems
+
+### Node.js Dependencies
+- Playwright for testing
+- Zod for schema validation
+- Dotenv for environment variables
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+```
+DATABASE_URL=postgresql://localhost:5432/your_database_name
+```
+## Folder Structure
+```
+tests/
+├── config/           → Test data, API endpoints
+├── e2e/
+│   ├── api/          → Backend tests (e.g. cart, admin login)
+│   └── ui/           → User journeys (login, cart, smoke)
+├── pages/            → Page Object Models (POM)
+├── utils/            → Helpers like `apiUtils`, `authUtils`
+├── schemas/          → JSON schema validation
+├── test-results/     → Reports and artifacts
+```
+
+
+## My Approach
+
+I approached this assignment not just as a checklist of tasks, but as a real-world scenario where my goal was to build a maintainable, scalable, and effective test framework for a production-grade eCommerce application.
 
 This README outlines the technical implementation, decision-making process, key test scenarios, challenges I encountered, and the strategy I followed to prioritize high-risk areas for automation.
 
 ---
-
-## My Approach
 
 I began by thoroughly reviewing the Spree Commerce platform, api documentation and the requirements provided. My goal was to simulate what it would be like to onboard a new product and design a test strategy that would work beyond a simple demo.
 
