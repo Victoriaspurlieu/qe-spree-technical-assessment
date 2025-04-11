@@ -23,13 +23,13 @@ I broke down the work into the following stages:
 ## Visual Results
 
 ### UI Test Execution Summary
-![UI Test Results](sandbox:/mnt/data/Screenshot%202025-04-10%20at%207.40.06%20PM.png)
+![UI Test Results] https://drive.google.com/file/d/1ndf9ndJV51ZUbNEZT1EqfuhpaLGplCAp/view?usp=drive_link
 
 ### API Test Summary
-![API Test Results](sandbox:/mnt/data/Screenshot%202025-04-10%20at%209.38.43%20AM.png)
+![API Test Results] https://drive.google.com/file/d/1NhtoFRJM3Jon6F6a3LWh8esYnJHFKkvP/view?usp=drive_link
 
 ### HTML Report - Authentication and Admin Login Test Case
-![HTML Report](sandbox:/mnt/data/screencapture-localhost-9323-2025-04-10-15_37_33.pdf)
+![HTML Report] https://drive.google.com/file/d/1cV7S6xp3yIxcH3X6Ar1S0Yp7EhmOcS0F/view?usp=drive_link
 
 ---
 
