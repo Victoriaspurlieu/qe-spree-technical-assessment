@@ -42,6 +42,15 @@ store.settings = {
 # Save the store first to ensure it exists
 store.save!
 
+# Create admin user
+admin = Spree::User.find_or_initialize_by(email: 'spree@example.com')
+if admin.new_record?
+  admin.password = 'spree123'
+  admin.password_confirmation = 'spree123'
+  admin.spree_roles << Spree::Role.find_or_create_by(name: 'admin')
+  admin.save!
+end
+
 # Set store preferences after saving
 store.preferences = {
   default_country_id: nil,
@@ -67,6 +76,20 @@ shipping_category = Spree::ShippingCategory.find_or_create_by!(name: 'Default')
 
 # Create a default tax category
 tax_category = Spree::TaxCategory.find_or_create_by!(name: 'Default', is_default: true)
+
+# Create shipping zones
+created_zones = {}
+['North America', 'Europe', 'Asia'].each do |zone_name|
+  zone = Spree::Zone.find_or_create_by!(name: zone_name)
+  zone.kind = 'country'
+  zone.save!
+  created_zones[zone_name] = zone
+end
+
+# Add countries to zones
+Spree::Country.where(iso: ['US', 'CA', 'MX']).each do |country|
+  created_zones['North America'].zone_members.create!(zoneable: country)
+end
 
 # Create sample products
 products = [
@@ -113,47 +136,6 @@ products.each do |product_attrs|
   end
 end
 
-# Define zones with their countries first
-puts "Setting up shipping zones..."
-zones = {
-  "North America" => ["US", "CA"],
-  "South America" => ["BR", "AR", "CL", "CO", "PE", "VE"],
-  "EU_VAT" => ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"],
-  "Middle East" => ["AE", "BH", "IL", "JO", "KW", "LB", "OM", "QA", "SA", "TR"],
-  "Asia" => ["CN", "JP", "KR", "IN", "ID", "MY", "PH", "SG", "TH", "VN"]
-}
-
-created_zones = {}
-zones.each do |zone_name, country_codes|
-  zone = Spree::Zone.find_by(name: zone_name)
-  if zone
-    puts "Updating existing zone: #{zone_name}"
-  else
-    puts "Creating new zone: #{zone_name}"
-    zone = Spree::Zone.new(name: zone_name, description: "#{zone_name} Zone")
-  end
-  
-  created_zones[zone_name] = zone
-  
-  # Remove all existing zone members
-  zone.zone_members.destroy_all
-  
-  # Add unique countries to the zone
-  country_codes.each do |code|
-    country = Spree::Country.find_by(iso: code)
-    if country
-      zone.zone_members.create!(zoneable: country)
-      puts "Added #{country.name} to #{zone_name} zone"
-    else
-      puts "Warning: Country with code #{code} not found"
-    end
-  end
-  
-  zone.save!
-end
-
-puts "Shipping zones setup completed!"
-
 # Create shipping methods using the already created zones
 shipping_methods = [
   {
@@ -162,7 +144,8 @@ shipping_methods = [
     code: 'STANDARD',
     calculator_type: 'Spree::Calculator::Shipping::FlatRate',
     shipping_categories: [shipping_category],
-    zones: [created_zones['North America']]
+    zones: [created_zones['North America']],
+    available_to_all: true
   },
   {
     name: 'Express Shipping',
@@ -170,7 +153,8 @@ shipping_methods = [
     code: 'EXPRESS',
     calculator_type: 'Spree::Calculator::Shipping::FlatRate',
     shipping_categories: [shipping_category],
-    zones: [created_zones['North America']]
+    zones: [created_zones['North America']],
+    available_to_all: true
   }
 ]
 
@@ -179,6 +163,7 @@ shipping_methods.each do |method_attrs|
   method.attributes = method_attrs.except(:shipping_categories, :zones)
   method.shipping_categories = method_attrs[:shipping_categories]
   method.zones = method_attrs[:zones]
+  method.available_to_all = method_attrs[:available_to_all]
   method.save!
 
   # Create calculator for the shipping method

@@ -7,7 +7,12 @@
     "lib": "lib",
     "test": "test"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test tests/e2e/ui/",
+    "test:api": "playwright test tests/e2e/api/",
+    "test:debug": "playwright test --debug"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Victoriaspurlieu/qe-spree-technical-assessment.git"

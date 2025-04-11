@@ -41,12 +41,14 @@ export class SpreeEndpoints {
 
     get checkout() {
         return {
-            next: `${this.baseUrl}/api/v2/storefront/checkout/next`,
-            advance: `${this.baseUrl}/api/v2/storefront/checkout/advance`,
-            complete: `${this.baseUrl}/api/v2/storefront/checkout/complete`,
-            update: `${this.baseUrl}/api/v2/storefront/checkout`,
-            payments: `${this.baseUrl}/api/v2/storefront/checkout/payments`,
-            address: `${this.baseUrl}/api/v2/storefront/checkout/address`
+            next: '/api/v2/storefront/checkout/next',
+            advance: '/api/v2/storefront/checkout/advance',
+            address: '/api/v2/storefront/checkout/shipping_address',
+            shipments: '/api/v2/storefront/checkout/shipments',
+            payments: '/api/v2/storefront/checkout/payments',
+            complete: '/api/v2/storefront/checkout/complete',
+            current: '/api/v2/storefront/checkout',
+            delivery: '/api/v2/storefront/checkout/delivery'
         };
     }
 
@@ -54,7 +56,14 @@ export class SpreeEndpoints {
         return {
             list: `${this.baseUrl}/api/v2/storefront/orders`,
             show: (number: string) => `${this.baseUrl}/api/v2/storefront/orders/${number}`,
-            current: `${this.baseUrl}/api/v2/storefront/orders/current`
+            current: `${this.baseUrl}/api/v2/storefront/orders/current`,
+            payments: `${this.baseUrl}/api/v2/storefront/orders/payments`
+        };
+    }
+
+    get shipments() {
+        return {
+            selectShippingRate: `${this.baseUrl}/api/v2/storefront/shipments`
         };
     }
 

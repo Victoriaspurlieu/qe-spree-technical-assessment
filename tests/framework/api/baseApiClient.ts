@@ -62,43 +62,15 @@ export abstract class BaseApiClient {
     return this.handleResponse<T>(response);
   }
 
-  protected async postRaw(endpoint: string, data: any, headers?: Record<string, string>, isForm: boolean = false): Promise<APIResponse> {
-    const requestHeaders = {
-      ...this.headers,
-      ...headers,
-      'Content-Type': isForm ? 'application/x-www-form-urlencoded' : 'application/json',
-      'Accept': 'application/json'
-    };
-    
-    // Special handling for oauth token endpoint
-    const url = endpoint.startsWith('http') || endpoint === '/spree_oauth/token' 
-      ? endpoint 
-      : `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
-    
-    console.log('Making POST request to:', url);
-    console.log('Request data:', data);
-    console.log('Request headers:', requestHeaders);
-
-    let requestData: any;
-    if (isForm) {
-      const formData = new URLSearchParams();
-      for (const [key, value] of Object.entries(data)) {
-        if (value !== undefined && value !== null && value !== '') {
-          formData.append(key, value as string);
-        }
+  protected async postRaw(endpoint: string, data: any, headers: Record<string, string> = {}): Promise<APIResponse> {
+    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
+    return await this.request.post(url, {
+      data,
+      headers: {
+        ...this.headers,
+        ...headers
       }
-      requestData = formData.toString();
-    } else {
-      requestData = data;
-    }
-
-    const response = await this.request.post(url, {
-      headers: requestHeaders,
-      data: requestData
     });
-    console.log('Response status:', response.status());
-    console.log('Response headers:', response.headers());
-    return response;
   }
 
   protected async patch<T>(endpoint: string, data: any): Promise<T> {
@@ -122,7 +94,8 @@ export abstract class BaseApiClient {
       ...this.headers,
       ...headers
     };
-    return await this.request.get(`${this.baseUrl}${endpoint}`, {
+    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
+    return await this.request.get(url, {
       headers: requestHeaders
     });
   }

@@ -22,6 +22,8 @@ interface TestDataType {
     };
     selectors: {
         addToCartButton: string;
+        sizeSelect: string;
+        variantPicker: string;
         cartIcon: string;
         cartItem: string;
         cartQuantity: string;
@@ -34,7 +36,6 @@ interface TestDataType {
         quantityInput: string;
         removeItemButton: string;
         updateCartButton: string;
-        sizeSelect: string;
         cartSidePane: string;
         cartSidePaneProduct: string;
         cartSidePaneCheckout: string;
@@ -47,6 +48,7 @@ interface TestDataType {
     api: {
         baseUrl: string;
         productId: string;
+        outOfStockProductId: string;
         admin: {
             email: string;
             password: string;
@@ -67,6 +69,7 @@ interface TestDataType {
             order: string;
             variant: string;
             payment: string;
+            shipment: string;
         };
         endpoints: {
             oauth: {
@@ -147,7 +150,9 @@ const testData: TestDataType = {
         adminLogin: '/admin/login'
     },
     selectors: {
-        addToCartButton: 'button.add-to-cart-button >> nth=0',
+        addToCartButton: 'button.add-to-cart-button:not([disabled])',
+        sizeSelect: 'input[type="radio"][name="Color"]',
+        variantPicker: '#product-variant-picker',
         cartIcon: '[data-testid="cart-icon"]',
         cartItem: '[data-testid="cart-item"]',
         cartQuantity: '[data-testid="cart-quantity"]',
@@ -155,14 +160,13 @@ const testData: TestDataType = {
         checkoutButton: 'button:has-text("Checkout")',
         continueShoppingButton: 'button:has-text("Continue Shopping")',
         emptyCartMessage: 'text=Your cart is empty',
-        productName: '.text-text:has-text("PRINTED PANTS")',
+        productName: 'h1:has-text("PRINTED PANTS")',
         productPrice: '[data-testid="product-price"]',
         quantityInput: '[data-testid="quantity-input"]',
         removeItemButton: '[data-testid="remove-item"]',
         updateCartButton: '[data-testid="update-cart"]',
-        sizeSelect: '[data-testid="size-select"]',
         cartSidePane: '[data-testid="cart-side-pane"]',
-        cartSidePaneProduct: '[data-testid="cart-side-pane"] .text-text:has-text("PRINTED PANTS")',
+        cartSidePaneProduct: '[data-testid="cart-side-pane"] h1:has-text("PRINTED PANTS")',
         cartSidePaneCheckout: '[data-testid="cart-side-pane"] button:has-text("Checkout")',
         welcomeText: 'div.trix-content:has-text("Welcome to our shop!") >> nth=0',
         flashMessage: '.flash-message',
@@ -172,27 +176,29 @@ const testData: TestDataType = {
     },
     api: {
         baseUrl: 'http://localhost:3000',
-        productId: '1',
+        productId: '114',
+        outOfStockProductId: '999',
         admin: {
             email: 'spree@example.com',
             password: 'spree123',
-            clientId: 'spree_api_key',
-            clientSecret: 'spree_api_secret'
+            clientId: 'client_id',
+            clientSecret: 'client_secret'
         },
         testAddress: {
             firstname: 'John',
             lastname: 'Doe',
             address1: '123 Main St',
             city: 'New York',
-            phone: '1234567890',
+            phone: '555-123-4567',
             zipcode: '10001',
             country_iso: 'US',
-            state_name: 'New York'
+            state_name: 'NY'
         },
         invalidIds: {
-            order: 'invalid-order-id',
-            variant: 'invalid-variant-id',
-            payment: 'invalid-payment-id'
+            order: '999999',
+            variant: '999999',
+            payment: '999999',
+            shipment: '999999'
         },
         endpoints: {
             oauth: {

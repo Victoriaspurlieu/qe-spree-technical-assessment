@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_19_151854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -770,6 +770,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
     t.bigint "promotion_rule_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.index ["product_id", "promotion_rule_id"], name: "idx_on_product_id_promotion_rule_id_aaea0385c9", unique: true
     t.index ["product_id"], name: "index_products_promotion_rules_on_product_id"
     t.index ["promotion_rule_id", "product_id"], name: "index_products_promotion_rules_on_promotion_rule_and_product"
   end
@@ -877,6 +878,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
     t.integer "quantity", default: 1
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.index ["promotion_action_id", "variant_id"], name: "idx_on_promotion_action_id_variant_id_90d181a88a", unique: true
     t.index ["promotion_action_id"], name: "index_spree_promotion_action_line_items_on_promotion_action_id"
     t.index ["variant_id"], name: "index_spree_promotion_action_line_items_on_variant_id"
   end
@@ -906,6 +908,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["promotion_rule_id"], name: "index_spree_promotion_rule_taxons_on_promotion_rule_id"
+    t.index ["taxon_id", "promotion_rule_id"], name: "idx_on_taxon_id_promotion_rule_id_3c91a6f5d7", unique: true
     t.index ["taxon_id"], name: "index_spree_promotion_rule_taxons_on_taxon_id"
   end
 
@@ -915,6 +918,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["promotion_rule_id"], name: "index_promotion_rules_users_on_promotion_rule_id"
+    t.index ["user_id", "promotion_rule_id"], name: "idx_on_user_id_promotion_rule_id_ad0307a89b", unique: true
     t.index ["user_id", "promotion_rule_id"], name: "index_promotion_rules_users_on_user_id_and_promotion_rule_id"
   end
 
@@ -1158,8 +1162,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
     t.bigint "user_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.string "user_type", null: false
     t.index ["role_id"], name: "index_spree_role_users_on_role_id"
     t.index ["user_id"], name: "index_spree_role_users_on_user_id"
+    t.index ["user_type"], name: "index_spree_role_users_on_user_type"
   end
 
   create_table "spree_roles", force: :cascade do |t|
@@ -1462,6 +1468,73 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_11_134929) do
     t.index ["default"], name: "index_spree_stores_on_default"
     t.index ["deleted_at"], name: "index_spree_stores_on_deleted_at"
     t.index ["url"], name: "index_spree_stores_on_url"
+  end
+
+  create_table "spree_stripe_payment_intents", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.bigint "order_id", null: false
+    t.bigint "payment_method_id", null: false
+    t.string "stripe_id", null: false
+    t.string "client_secret", null: false
+    t.string "customer_id"
+    t.string "ephemeral_key_secret"
+    t.string "stripe_payment_method_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "stripe_id"], name: "index_spree_stripe_payment_intents_on_order_id_and_stripe_id", unique: true
+    t.index ["order_id"], name: "index_spree_stripe_payment_intents_on_order_id"
+    t.index ["payment_method_id"], name: "index_spree_stripe_payment_intents_on_payment_method_id"
+  end
+
+  create_table "spree_stripe_payment_methods_webhook_keys", force: :cascade do |t|
+    t.bigint "payment_method_id", null: false
+    t.bigint "webhook_key_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_method_id", "webhook_key_id"], name: "index_payment_method_id_webhook_key_id_uniqueness", unique: true
+    t.index ["payment_method_id"], name: "index_payment_methods_webhook_keys_on_payment_method_id"
+    t.index ["webhook_key_id"], name: "index_payment_methods_webhook_keys_on_webhook_key_id"
+  end
+
+  create_table "spree_stripe_webhook_keys", force: :cascade do |t|
+    t.string "stripe_id", null: false
+    t.string "signing_secret", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["signing_secret"], name: "index_spree_stripe_webhook_keys_on_signing_secret", unique: true
+    t.index ["stripe_id"], name: "index_spree_stripe_webhook_keys_on_stripe_id", unique: true
+  end
+
+  create_table "spree_taggings", force: :cascade do |t|
+    t.bigint "tag_id"
+    t.string "taggable_type"
+    t.bigint "taggable_id"
+    t.string "tagger_type"
+    t.bigint "tagger_id"
+    t.string "context", limit: 128
+    t.datetime "created_at", precision: nil
+    t.string "tenant", limit: 128
+    t.index ["context"], name: "index_spree_taggings_on_context"
+    t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "spree_taggings_idx", unique: true
+    t.index ["tag_id"], name: "index_spree_taggings_on_tag_id"
+    t.index ["taggable_id", "taggable_type", "context"], name: "spree_taggings_taggable_context_idx"
+    t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "spree_taggings_idy"
+    t.index ["taggable_id"], name: "index_spree_taggings_on_taggable_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_spree_taggings_on_taggable_type_and_taggable_id"
+    t.index ["taggable_type"], name: "index_spree_taggings_on_taggable_type"
+    t.index ["tagger_id", "tagger_type"], name: "index_spree_taggings_on_tagger_id_and_tagger_type"
+    t.index ["tagger_id"], name: "index_spree_taggings_on_tagger_id"
+    t.index ["tagger_type", "tagger_id"], name: "index_spree_taggings_on_tagger_type_and_tagger_id"
+    t.index ["tenant"], name: "index_spree_taggings_on_tenant"
+  end
+
+  create_table "spree_tags", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "taggings_count", default: 0
+    t.index "lower((name)::text) varchar_pattern_ops", name: "index_spree_tags_on_lower_name"
+    t.index ["name"], name: "index_spree_tags_on_name", unique: true
   end
 
   create_table "spree_tax_categories", force: :cascade do |t|

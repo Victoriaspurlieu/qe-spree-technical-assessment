@@ -34,6 +34,7 @@ npm-debug.log*
 /playwright/.cache/
 /playwright/.auth/
 /playwright/.trace/
+/artifacts/
 
 # Database
 /db/*.sqlite3

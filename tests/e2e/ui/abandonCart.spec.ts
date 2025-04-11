@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { CartPage } from '../../pages/CartPage';
 import { ProductPage } from '../../pages/productPage';
 import testData from '../../config/testData';
-import { addProductToCart } from '../../support/cartActions';
+import { addProductToCart } from '../../helpers/cartActions';
 
 test.describe('Add to Cart', () => {
 

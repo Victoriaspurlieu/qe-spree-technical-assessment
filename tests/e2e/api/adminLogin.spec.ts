@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { ApiUtils } from '../../utils/apiUtils';
 import testData from '../../config/testData';
-import { StatusCode, ErrorMessage, TokenResponse, OAuthErrorResponse, AdminErrorResponse } from '../../schemas/spreeSchema';
+import { StatusCode } from '../../schemas/spreeSchema';
+import { authenticateAdmin } from '../../utils/authUtils';
 
 test.describe('Admin Login API', () => {
     let apiUtils: ApiUtils;
@@ -10,139 +11,58 @@ test.describe('Admin Login API', () => {
         apiUtils = new ApiUtils(request, testData.api.baseUrl);
     });
 
-    test('should successfully authenticate with client credentials', async () => {
-        console.log('Initializing test with base URL:', testData.api.baseUrl);
-        console.log('Starting successful authentication test...');
+    test('should successfully authenticate with valid credentials', async ({ request }) => {
+        const authenticatedApiUtils = await authenticateAdmin(request);
         
-        const email = testData.api.admin.email;
-        const password = testData.api.admin.password;
-        console.log('Using admin credentials:', { email, password });
+        // Verify admin dashboard access
+        const dashboardResponse = await authenticatedApiUtils.getAdminDashboard();
+        expect(dashboardResponse.status()).toBe(StatusCode.Ok);
 
-        try {
-            const response = await apiUtils.adminLogin(email, password);
-            console.log('Login response status:', response.status());
-            
-            expect(response.status()).toBe(StatusCode.Ok);
-            
-            const responseData = await response.json();
-            expect(responseData.access_token).toBeDefined();
-            expect(responseData.token_type).toBe('Bearer');
-            
-            apiUtils.setAuthToken(responseData.access_token);
-            
-            const userResponse = await apiUtils.getCurrentUser();
-            console.log('User response status:', userResponse.status());
-            
-            expect(userResponse.status()).toBe(StatusCode.Ok);
-            const userData = await userResponse.json();
-            expect(userData.data.attributes.email).toBe(email);
-        } catch (error) {
-            console.error('Test failed with error:', error);
-            throw error;
-        }
+        // Logout and clear cookies
+        await authenticatedApiUtils.adminLogout();
     });
 
     test('should fail with invalid credentials', async () => {
-        console.log('Starting invalid credentials test...');
+        const response = await apiUtils.adminLogin('invalid@example.com', 'wrongpassword');
+        expect(response.status()).toBe(StatusCode.UnprocessableEntity);
         
-        try {
-            const response = await apiUtils.adminLogin('wrong@example.com', 'wrongpassword');
-            console.log('Invalid login response status:', response.status());
-            
-            expect(response.status()).toBe(StatusCode.Unauthorized);
-            const responseData = await response.json();
-            expect(responseData.error).toBeDefined();
-        } catch (error) {
-            console.error('Test failed with error:', error);
-            throw error;
-        }
+        const html = await response.text();
+        expect(html).toContain('Invalid Email or password.');
+        
+        // Verify no admin session cookie is set
+        const cookies = response.headers()['set-cookie'];
+        expect(cookies).toBeDefined();
+        expect(cookies).not.toContain('spree_admin_session');
     });
 
-    test('should fail with missing credentials', async () => {
-        console.log('Starting missing credentials test...');
+    test('should fail with empty credentials', async () => {
+        const response = await apiUtils.adminLogin('', '');
+        expect(response.status()).toBe(StatusCode.UnprocessableEntity);
         
-        try {
-            const response = await apiUtils.adminLogin('', '');
-            console.log('Missing credentials response status:', response.status());
-            
-            expect(response.status()).toBe(StatusCode.BadRequest);
-            const responseData = await response.json();
-            expect(responseData.error).toBeDefined();
-        } catch (error) {
-            console.error('Test failed with error:', error);
-            throw error;
-        }
-    });
-
-    test('should handle invalid client credentials', async () => {
-        console.log('Starting invalid credentials test...');
-        const invalidEmail = 'invalid@example.com';
-        const invalidPassword = 'wrongpassword';
-        console.log('Using invalid credentials:', { invalidEmail, invalidPassword });
-
-        const response = await apiUtils.adminLogin(invalidEmail, invalidPassword);
-        const responseText = await response.text();
-        console.log('Error response:', responseText);
+        const html = await response.text();
+        expect(html).toContain('Invalid Email or password.');
         
-        expect(response.status()).toBe(StatusCode.Unauthorized);
-        const errorData = JSON.parse(responseText) as OAuthErrorResponse;
-        console.log('Parsed error response:', errorData);
-        expect(errorData.error).toBe('invalid_client');
-        expect(errorData.error_description).toBeDefined();
-    });
-
-    test('should handle invalid grant type', async () => {
-        console.log('Starting invalid grant type test...');
-        const response = await apiUtils.adminLogin(testData.api.admin.email, testData.api.admin.password);
-        const responseText = await response.text();
-        console.log('Error response:', responseText);
-        
-        expect(response.status()).toBe(StatusCode.BadRequest);
-        const errorData = JSON.parse(responseText) as OAuthErrorResponse;
-        console.log('Parsed error response:', errorData);
-        expect(errorData.error).toBe('unsupported_grant_type');
-        expect(errorData.error_description).toBeDefined();
+        // Verify no admin session cookie is set
+        const cookies = response.headers()['set-cookie'];
+        expect(cookies).toBeDefined();
+        expect(cookies).not.toContain('spree_admin_session');
     });
 
     test('should not access admin resources without authentication', async () => {
-        console.log('Starting unauthenticated access test...');
-        const response = await apiUtils.getAdminOrders('');
-        const responseText = await response.text();
-        console.log('Error response:', responseText);
-        
-        expect(response.status()).toBe(StatusCode.Unauthorized);
-        const errorData = JSON.parse(responseText) as AdminErrorResponse;
-        console.log('Parsed error response:', errorData);
-        expect(errorData.error).toBe('unauthorized');
-        expect(errorData.status).toBe(StatusCode.Unauthorized);
+        const response = await apiUtils.getAdminDashboard();
+        expect(response.status()).toBe(StatusCode.Found);
+        expect(response.headers()['location']).toContain('/users/sign_in');
     });
 
     test('should not access admin resources after logout', async () => {
-        console.log('Starting post-logout access test...');
-        // Login first
-        console.log('Logging in with valid credentials...');
-        const loginResponse = await apiUtils.adminLogin(testData.api.admin.email, testData.api.admin.password);
-        const loginText = await loginResponse.text();
-        console.log('Login response:', loginText);
+        const loginResponse = await apiUtils.adminLogin('spree@example.com', 'spree123');
+        expect(loginResponse.status()).toBe(StatusCode.SeeOther);
         
-        const tokenData = JSON.parse(loginText) as TokenResponse;
-        apiUtils.setAuthToken(tokenData.access_token);
-        console.log('Access token set successfully');
-        
-        // Logout
-        console.log('Logging out...');
         await apiUtils.adminLogout();
         
         // Try to access admin resources
-        console.log('Attempting to access admin resources after logout...');
-        const ordersResponse = await apiUtils.getAdminOrders('');
-        const ordersText = await ordersResponse.text();
-        console.log('Orders error response:', ordersText);
-        
-        expect(ordersResponse.status()).toBe(StatusCode.Unauthorized);
-        const errorData = JSON.parse(ordersText) as AdminErrorResponse;
-        console.log('Parsed error response:', errorData);
-        expect(errorData.error).toBe('unauthorized');
-        expect(errorData.status).toBe(StatusCode.Unauthorized);
+        const dashboardResponse = await apiUtils.getAdminDashboard();
+        expect(dashboardResponse.status()).toBe(StatusCode.Found);
+        expect(dashboardResponse.headers()['location']).toContain('/users/sign_in');
     });
 }); 
