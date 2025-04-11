@@ -23,13 +23,13 @@ I broke down the work into the following stages:
 ## Visual Results
 
 ### UI Test Execution Summary
-![UI Test Results] https://drive.google.com/file/d/1ndf9ndJV51ZUbNEZT1EqfuhpaLGplCAp/view?usp=drive_link
+[UI Test Results] https://drive.google.com/file/d/1ndf9ndJV51ZUbNEZT1EqfuhpaLGplCAp/view?usp=drive_link
 
 ### API Test Summary
-![API Test Results] https://drive.google.com/file/d/1NhtoFRJM3Jon6F6a3LWh8esYnJHFKkvP/view?usp=drive_link
+[API Test Results] https://drive.google.com/file/d/1NhtoFRJM3Jon6F6a3LWh8esYnJHFKkvP/view?usp=drive_link
 
 ### HTML Report - Authentication and Admin Login Test Case
-![HTML Report] https://drive.google.com/file/d/1cV7S6xp3yIxcH3X6Ar1S0Yp7EhmOcS0F/view?usp=drive_link
+[HTML Report] https://drive.google.com/file/d/1cV7S6xp3yIxcH3X6Ar1S0Yp7EhmOcS0F/view?usp=drive_link
 
 ---
 
