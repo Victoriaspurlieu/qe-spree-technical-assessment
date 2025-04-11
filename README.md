@@ -8,7 +8,7 @@ This README outlines the technical implementation, decision-making process, key 
 
 ## My Approach
 
-When I received the assessment, I began by thoroughly reviewing the Spree Commerce platform, api documentation and the requirements provided. My goal was to simulate what it would be like to onboard a new product and design a test strategy that would work beyond a simple demo.
+I began by thoroughly reviewing the Spree Commerce platform, api documentation and the requirements provided. My goal was to simulate what it would be like to onboard a new product and design a test strategy that would work beyond a simple demo.
 
 I broke down the work into the following stages:
 
