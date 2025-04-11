@@ -23,13 +23,14 @@ I broke down the work into the following stages:
 ## Visual Results
 
 ### UI Test Execution Summary
-![UI Test Results](images/ui-test-results.png)
+![UI Test Results](tests/test-results/artifacts/ui-test-results.png)
 
 ### API Test Summary
-![API Test Results](images/api-summary.png)
+![API Test Results](tests/test-results/artifacts/api-summary.png)
 
 ### HTML Report Preview
-[View Report (PDF)](images/report-preview.pdf)
+[View HTML Test Report (PDF)](tests/test-results/artifacts/screencapture-localhost-9323-2025-04-10-15_37_33.pdf)
+
 ---
 
 ## Challenges and How I Solved Them
