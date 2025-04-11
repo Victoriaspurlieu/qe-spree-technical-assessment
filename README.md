@@ -88,7 +88,7 @@ Initial GitHub Actions runs failed due to environmental differences. I isolated 
 
 This assignment challenged me to apply my experience across testing strategy, infrastructure setup, debugging, and CI pipelines. It required creativity, discipline, and a strong user focus.
 
-The outcome is a modular, scalable Playwright framework that reflects real-world QA practices, not just green tests. I would be happy to walk you through the codebase and my decisions during a live review.
+The outcome is a modular, scalable Playwright framework that reflects real-world QA practices, not just green tests.
 ---
 
 ## Test Data Management and Refactoring Plan
